@@ -102,3 +102,34 @@ function viewAllDepts() {
             });
     });
 }
+
+// Function for view all roles
+function viewAllRoles() {
+    // Query database for all roles
+    connection.query('SELECT title FROM role', function(err, results) {
+        if(err) throw err;
+        // Prompts user to choose role they want to view
+        inquirer
+            .prompt([
+                {
+                    name: 'choice',
+                    type: 'list',
+                    choices: function() {
+                        let choiceArray = [];
+                        for(i=0; i < results.length; i++) {
+                            choiceArray.push(results[i].title);
+                        }
+                        return choiceArray;
+                    },
+                    message: 'Select role'
+                }
+            ]).then (function(answer) {
+                console.log(answer.choice);
+                connection.query('SELECT e.id AS ID, e.first_name AS First, e.last_name AS Last, e.role_id AS Role, r.salary AS Salary, m.last_name AS Manager, d.name AS Department FROM employee e LEFT JOIN employee m ON e.manager_id = m.id LEFT JOIN role r ON e.role_id = r.title LEFT JOIN department d on r.department_id = d.id WHERE e.role_id =?', [answer.choice], function(err, results) {
+                    if(err) throw err;
+                    console.table(results);
+                    start();
+                })
+            });
+    });
+}
