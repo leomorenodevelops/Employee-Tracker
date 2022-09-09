@@ -26,12 +26,12 @@ function start() {
         .prompt([
             {
                 type: 'list',
-                name: 'prompt',
+                name: 'start',
                 message: 'What would you like to do?',
                 choices: ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departments', 'Add Department', 'Quit']
             }
         ]).then (function(res) {
-            switch(res.prompt) {
+            switch(res.start) {
                 case 'View All Employees':
                     viewAllEmployees();
                     break;
@@ -70,5 +70,35 @@ function viewAllEmployees() {
         if(err) throw err;
         console.table(results);
         start();
+    });
+}
+
+// Function for View All Departments
+function viewAllDepts() {
+    // query database for all deparments
+    connection.query('SELECT * FROM department', function(err, results) {
+        if(err) throw err;
+        // Prompts user to choose department they want to view
+        inquirer
+            .prompt([
+                {
+                    name: 'choice',
+                    type: 'list',
+                    choices: function() {
+                        let choiceArray = [];
+                        for(i=0; i < results.length; i++) {
+                            choiceArray.push(results[i].name);
+                        }
+                        return choiceArray;
+                    },
+                    message: 'Select department'
+                }
+            ]).then (function(answer) {
+                connection.query('SELECT e.id AS ID, e.first_name AS First, e.last_name AS Last, e.role_id AS Role, r.salary AS Salary, m.last_name AS Manager, d.name AS Department FROM employee e LEFT JOIN employee m ON e.manager_id = m.id LEFT JOIN role r ON e.role_id = r.title LEFT JOIN department d on r.department_id = d.id WHERE d.name =?', [answer.choice], function(err, results) {
+                    if(err) throw err;
+                    console.table(results);
+                    start();
+                })
+            });
     });
 }
