@@ -208,3 +208,62 @@ function addRole() {
             )
         })
 }
+
+// Function to add an employee
+function addEmployee() {
+    connection.query('SELECT * FROM role', function(err, results) {
+        if(err) throw err;
+        // Prompts user to new employee info
+        inquirer
+            .prompt([
+                {
+                    name: 'firstName',
+                    type: 'input',
+                    message: 'Enter employee first name'
+                },
+                {
+                    name: 'lastName',
+                    type: 'input',
+                    message: 'Enter employee last name'
+                },
+                {
+                    name: 'role',
+                    type: 'list',
+                    choices: function() {
+                        let choiceArray = [];
+                        for(i=0; i < results.length; i++) {
+                            choiceArray.push(results[i].title);
+                        }
+                        return choiceArray;
+                    },
+                    message: 'Select title'
+                },
+                {
+                    name: 'manager',
+                    type: 'number',
+                    validate: function(value) {
+                        if(isNaN(value) === false) {
+                            return true;
+                        }
+                        return false;
+                    },
+                    message: 'Enter manager ID',
+                    default: '1'
+                }
+            ]).then(function(answer) {
+                // Answer is an object with key values from inquirer prompt
+                connection.query('INSERT INTO employee SET ?',
+                    {
+                        first_name: answer.firstName,
+                        last_name: answer.lastName,
+                        role_id: answer.role,
+                        manager_id: answer.manager
+                    }
+                )
+                console.log('===============');
+                console.log('Employee added successfully');
+                console.log('===============');
+                start();
+            });
+    });
+}
