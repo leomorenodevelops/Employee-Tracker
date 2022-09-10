@@ -133,3 +133,25 @@ function viewAllRoles() {
             });
     });
 }
+
+// Function to add a department
+function addDept() {
+    // Prompt info for department
+    inquirer
+        .prompt([
+            {
+                name: 'department',
+                type: 'input',
+                message: 'What is the name of the department?'
+            }
+        ]).then (function(answer) {
+            connection.query('INSERT INTO department VALUES (DEFAULT, ?)',
+            [answer.department],
+            function(err) {
+                if(err) throw err;
+                console.log('===============');
+                console.log('Added ' + answer.department + ' to the database');
+                console.log('===============');
+            })
+        });
+}
