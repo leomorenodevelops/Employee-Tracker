@@ -145,6 +145,7 @@ function addDept() {
                 message: 'What is the name of the department?'
             }
         ]).then (function(answer) {
+            // Inserts department values as defult id and name
             connection.query('INSERT INTO department VALUES (DEFAULT, ?)',
             [answer.department],
             function(err) {
@@ -152,6 +153,58 @@ function addDept() {
                 console.log('===============');
                 console.log('Added ' + answer.department + ' to the database');
                 console.log('===============');
+                start();
             })
         });
+}
+
+// Function to add an employee role
+function addRole() {
+    // Prompt info for role
+    inquirer
+        .prompt([
+            {
+                name: 'role',
+                type: 'input',
+                message: 'What is the title of the role?'
+            },
+            {
+                name: 'salary',
+                type: 'number',
+                message: 'What is the salary of the role?',
+                validate: function(value) {
+                    if(isNaN(value) === false) {
+                        return true;
+                    }
+                    return false;
+                }
+            },
+            {
+                name: 'department_id',
+                type: 'number',
+                message: 'What is the department ID',
+                validate: function(value) {
+                    if(isNaN(value) === false) {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+        ]).then(function(answer) {
+            connection.query('INSERT INTO role SET ?', 
+                {
+                    title: answer.role,
+                    salary: answer.salary,
+                    department_id: answer.department_id
+                },
+                function(err) {
+                    if(err) throw err;
+                    console.log('===============');
+                    console.log('Added' + answer.role + 'to the database');
+                    console.log('===============');
+                    start();
+                    
+                }
+            )
+        })
 }
