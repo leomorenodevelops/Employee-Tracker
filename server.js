@@ -2,13 +2,14 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const consoleTable = require('console.table');
+require('dotenv').config();
 
 // Connection information for sql database
 const connection = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: 'Subarusti06',
-    database: 'employee_db'
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
 });
 
 // Connect to mysql server and database
