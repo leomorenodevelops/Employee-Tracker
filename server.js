@@ -84,7 +84,7 @@ function viewAllDepts() {
             .prompt([
                 {
                     name: 'choice',
-                    type: 'list',
+                    type: 'rawlist',
                     choices: function() {
                         let choiceArray = [];
                         for(i=0; i < results.length; i++) {
